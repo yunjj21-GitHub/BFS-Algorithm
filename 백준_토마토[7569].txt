@@ -1,0 +1,82 @@
+// 백준 7569 : 토마토
+#include <vector>
+#include <string>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int m, n, h; // 상자의 가로 칸의 수 m, 세로 칸의 수 n, 높이 h
+vector<vector<vector<int>>> tomato;
+queue<vector<int>> q;
+vector<vector<vector<bool>>> chk;
+vector<vector<vector<int>>> day;
+int unripe = 0;
+int dx[6] = { 0, 1, 0, -1, 0, 0 };
+int dy[6] = { 1, 0, -1, 0, 0, 0 };
+int dz[6] = { 0, 0, 0, 0, 1, -1 };
+
+int main() {
+	cin >> m >> n >> h;
+
+	tomato.assign(h, vector<vector<int>>(n, vector<int>(m, 0)));
+	chk.assign(h, vector<vector<bool>>(n, vector<bool>(m, false)));
+	day.assign(h, vector<vector<int>>(n, vector<int>(m, 0)));
+
+	for (int z = 0; z < h; z++) {
+		for (int y = 0; y < n; y++) {
+			for (int x = 0; x < m; x++) {
+				cin >> tomato[z][y][x];
+
+				if (tomato[z][y][x] == 1) {
+					q.push({ z, y, x });
+					chk[z][y][x] = true;
+					day[z][y][x] = 0;
+				}
+				else if (tomato[z][y][x] == 0) {
+					unripe++;
+				}
+			}
+		}
+	}
+
+	// BFS 탐색
+	while (!q.empty()) {
+		int z = q.front()[0];
+		int y = q.front()[1];
+		int x = q.front()[2];
+		q.pop();
+
+		for (int i = 0; i < 6; i++) {
+			int next_z = z + dz[i];
+			int next_x = x + dx[i];
+			int next_y = y + dy[i];
+
+			if (next_z < 0 || next_z >= h ||
+				next_y < 0 || next_y >= n ||
+				next_x < 0 || next_x >= m) {
+				continue;
+			}
+
+			if (tomato[next_z][next_y][next_x] == 0 && !chk[next_z][next_y][next_x]) {
+				q.push({ next_z, next_y, next_x });
+				chk[next_z][next_y][next_x] = true;
+				unripe--;
+				day[next_z][next_y][next_x] = day[z][y][x] + 1;
+			}
+		}
+	}
+
+	if (unripe != 0) cout << -1 << endl;
+	else {
+		int maxDay = 0;
+		for (int z = 0; z < h; z++) {
+			for (int y = 0; y < n; y++) {
+				for (int x = 0; x < m; x++) {
+					maxDay = maxDay < day[z][y][x] ? day[z][y][x] : maxDay;
+				}
+			}
+		}
+		cout << maxDay << endl;
+	}
+}
