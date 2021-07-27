@@ -1,0 +1,72 @@
+// 백준 16918 : 봄버맨
+#include <vector>
+#include <string>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int R, C, N; // R : 세로길이, C : 가로길이
+char map[200][200]; // 격자판의 정보를 저장
+int dx[4] = {0, 1, 0, -1};
+int dy[4] = {1, 0, -1, 0};
+
+int main() {
+	cin >> R >> C >> N;
+
+	// 격자판의 초기 정보를 입력받음
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	// N이 2의 배수라면 항상 모든 격자판이 폭탄으로 채워진 상태가 정답
+	if (N % 2 == 0) {
+		for (int i = 0; i < R; i++) {
+			for (int j = 0; j < C; j++) {
+				cout << 'O';
+			}
+			cout << '\n';
+		}
+		return 0;
+	}
+
+	int time = 1;
+	while (time != N) {
+		queue<pair<int, int>> q;
+		// 격자판을 읽으면서 'O'으로 모두 채운다.
+		for (int i = 0; i < R; i++) {
+			for (int j = 0; j < C; j++) {
+				if (map[i][j] == 'O') q.push({ j, i }); // {x, y}
+				else map[i][j] = 'O';
+			}
+		}
+
+		// 터트린다.
+		while (!q.empty()) {
+			int x = q.front().first;
+			int y = q.front().second;
+			q.pop();
+
+			map[y][x] = '.';
+			for (int i = 0; i < 4; i++) {
+				int next_x = x + dx[i];
+				int next_y = y + dy[i];
+
+				if (next_x >= 0 && next_x < C && next_y >= 0 && next_y < R) {
+					map[next_y][next_x] = '.';
+				}
+			}
+		}
+		time += 2;
+	}
+
+	// 답안 출력
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cout << map[i][j];
+		}
+		cout << '\n';
+	}
+}
