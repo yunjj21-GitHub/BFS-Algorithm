@@ -1,0 +1,67 @@
+// 백준 2636 : 치즈
+#include <vector>
+#include <string>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int dx[4] = { 1, -1, 0, 0 };
+int dy[4] = { 0, 0, 1, -1 };
+
+int main() {
+	int n, m; // n : 세로, m : 가로
+	cin >> n >> m;
+	int map[100][100];
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	int time = 0;
+	vector<pair<int, int>> disappearing; // 사라지는 치즈의 사이즈
+	while (1) {
+		queue<pair<int, int>> q;
+		bool chk[100][100] = { false };
+		q.push({ 0, 0 }); // {x, y}
+
+		while (!q.empty()) {
+			int x = q.front().first;
+			int y = q.front().second;
+			q.pop();
+
+			for (int i = 0; i < 4; i++) {
+				int nextX = x + dx[i];
+				int nextY = y + dy[i];
+
+				if (0 <= nextX && nextX < m && 0 <= nextY && nextY < n) {
+					if (map[nextY][nextX] == 0 && !chk[nextY][nextX]) {
+						q.push({ nextX, nextY });
+						chk[nextY][nextX] = true;
+					}
+					else if(map[nextY][nextX] == 1 && !chk[nextY][nextX]) {
+						disappearing.push_back({ nextX, nextY });
+						chk[nextY][nextX] = true;
+					}
+				}
+			}
+		}
+
+		for (auto tmp : disappearing) {
+			map[tmp.second][tmp.first] = 0;
+		}
+
+		time++;
+
+		int cnt = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				if (map[i][j] == 0) cnt++;
+			}
+		}
+		if (cnt == n * m) break;
+		else disappearing.clear();
+	}
+	cout << time << '\n' << disappearing.size() << '\n';
+}
