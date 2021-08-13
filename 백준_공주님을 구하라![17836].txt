@@ -1,0 +1,57 @@
+// 백준 17836 : 공주님을 구하라!
+#include <vector>
+#include <string>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int N, M, T;
+int map[100][100];
+queue<vector<int>> q;
+bool chk[100][100];
+int dy[4] = { 1, -1, 0, 0 };
+int dx[4] = { 0, 0, 1, -1 };
+
+int main() {
+	cin >> N >> M >> T;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	int ans = 10001;
+	q.push({ 0, 0, 0 }); // {y, x}
+	while (!q.empty()) {
+		int y = q.front()[0];
+		int x = q.front()[1];
+		int cur_time = q.front()[2];
+		q.pop();
+
+		if (map[y][x] == 2) {
+			int time = cur_time + ((N - 1) - y) + ((M - 1) - x);
+			if (ans > time) ans = time;
+		}
+
+		if (y == N - 1 && x == M - 1) {
+			if (ans > cur_time) ans = cur_time;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			int nxtY = y + dy[i];
+			int nxtX = x + dx[i];
+
+			if (0 <= nxtY && nxtY < N && 0 <= nxtX && nxtX < M) {
+				if (map[nxtY][nxtX] != 1 && !chk[nxtY][nxtX]) {
+					q.push({ nxtY, nxtX, cur_time + 1 });
+					chk[nxtY][nxtX] = true;
+				}
+			}
+		}
+
+	}
+
+	if (ans <= T) cout << ans << '\n';
+	else cout << "Fail" << '\n';
+}
