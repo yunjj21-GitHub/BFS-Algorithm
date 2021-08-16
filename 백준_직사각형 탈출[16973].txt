@@ -1,0 +1,87 @@
+// 백준 16973 : 직사각형 탈출
+#include <string>
+#include <vector>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int n, m;
+int map[1001][1001];
+bool chk[1001][1001];
+int h, w, sR, sC, fR, fC;
+// 위, 아래, 왼쪽, 오른쪽
+int dx[4] = { 0, 0, -1, 1 };
+int dy[4] = { -1, 1, 0, 0 };
+
+int main() {
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++) {
+		for (int j =1; j <= m; j++) {
+			cin >> map[i][j];
+		}
+	}
+	cin >> h >> w >> sR >> sC >> fR >> fC;
+
+	queue<vector<int>> q;
+	q.push({ sR, sC, 0}); // {y, x, 이동횟수}
+	while (!q.empty()) {
+		int y = q.front()[0];
+		int x = q.front()[1];
+		int num = q.front()[2]; 
+		q.pop();
+
+		if (y == fR && x == fC) {
+			std::cout << num << '\n';
+			return 0;
+		}
+
+		for (int i = 0; i < 4; i++) { // 위, 아래, 왼쪽, 오른쪽
+
+			if (chk[y + dy[i]][x + dx[i]]) continue;
+
+			int cnt = 0;
+			if (i == 0 || i == 1) { // 위 또는 아래
+				int nxtY = y + dy[i];
+
+				if (i == 1) nxtY += (h - 1);
+
+				if (1 <= nxtY && nxtY <= n) {
+					for (int c = 0; c < w; c++) {
+						int nxtX = (x + dx[i]) + c;
+						if (1 <= nxtX && nxtX <= m) {
+							if (map[nxtY][nxtX] != 1) cnt++;
+						}
+					}
+				}
+
+				if (cnt == w) {
+					q.push({ y + dy[i], x + dx[i], num + 1});
+					chk[y + dy[i]][x + dx[i]] = true;
+				}
+			}
+			else if (i == 2 || i == 3) { // 왼쪽 또는 오른쪽
+				int nxtX = x + dx[i];
+
+				if (i == 3) nxtX += (w - 1);
+
+				if (1 <= nxtX && nxtX <= m) {
+					for (int r = 0; r < h; r++) {
+						int nxtY = (y + dy[i]) + r;
+						if (1 <= nxtY && nxtY <= n) {
+							if (map[nxtY][nxtX] != 1) cnt++;
+						}
+					}
+				}
+
+				if (cnt == h) {
+					q.push({ y + dy[i], x + dx[i], num + 1});
+					chk[y + dy[i]][x + dx[i]] = true;
+				}
+			}
+		}
+	}
+
+	std::cout << -1 << '\n';
+	return 0;
+}
