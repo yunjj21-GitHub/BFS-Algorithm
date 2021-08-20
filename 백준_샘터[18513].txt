@@ -1,0 +1,56 @@
+// 백준 18513 : 샘터
+#include <iostream>
+#include <string>
+#include <vector>
+#include <queue>
+
+#define CENTER 100100000
+
+using namespace std;
+
+int n, k;
+queue<pair<int, long long>> q;
+bool chk[CENTER * 2 + 1]; // 사용할 인덱스 : 0 ~ 200200000
+int dx[2] = { -1, 1 };
+long long ans = 0;
+
+int main() {
+	cin >> n >> k;
+	for (int i = 0; i < n; i++) {
+		int spot;
+		cin >> spot;
+		q.push({ spot + CENTER, 0 }); // {x, depth}
+		chk[spot + CENTER] = true;
+	}
+
+	if (k == 0) {
+		cout << 0 << '\n';
+		return 0;
+	}
+
+	int cnt = 0;
+	while (!q.empty()) {
+		int x = q.front().first;
+		long long depth = q.front().second;
+		q.pop();
+
+		for (int i = 0; i < 2; i++) {
+			int nxtX = x + dx[i];
+
+			if (0 <= nxtX && nxtX <= CENTER * 2) {
+				if (!chk[nxtX]) {
+					q.push({ nxtX, depth + 1 });
+					chk[nxtX] = true;
+
+					cnt++;
+					ans += depth + 1;
+
+					if (cnt == k) {
+						cout << ans << '\n';
+						return 0;
+					}
+				}
+			}
+		}
+	}
+}
